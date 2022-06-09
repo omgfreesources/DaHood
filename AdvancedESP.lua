@@ -1,6 +1,21 @@
+-- Script made by remorse#9230
+-- Press V to enabled and disable the ESP
+
 if not game:IsLoaded() then
 	game.Loaded:Wait()
 end
+
+game.StarterGui:SetCore("SendNotification",{
+    Title = "Advanced ESP";
+    Text = "Loading...";
+    Duration = 10;
+})
+repeat wait() until workspace.Players:FindFirstChild(game.Players.LocalPlayer.Name)
+game.StarterGui:SetCore("SendNotification",{
+    Title = "Advanced ESP";
+    Text = "LOADED! press v to enable and disable the esp!";
+    Duration = 10;
+})
 
 local function CreateESP(target)
     local TOPHEADER = Instance.new("BillboardGui",game.Players:FindFirstChild(target).Character.UpperTorso)
@@ -231,19 +246,38 @@ local function MassCreate()
     end
 end
 
+local function FindPlrWithESP()
+    for i,v in pairs(game.Players:GetChildren()) do
+        if v.Character:FindFirstChild("UpperTorso"):FindFirstChild("ESP") then
+            return v.Name
+        end
+    end
+    return nil
+end
+
+local AlreadyDestroying = false
+
 player:GetMouse().KeyDown:Connect(function(key)
     if key:lower() == KeyBind:lower() then
         if ESPING == false then
-            ESPING = true
-            MassCreate()
+            if AlreadyDestroying == false then
+                ESPING = true
+                MassCreate()
+            end
         else
             ESPING = false
-            for i,v in pairs(game.Players:GetChildren()) do
-                if workspace.Players:FindFirstChild(v.Name) then
-                    if v.Character.UpperTorso:FindFirstChild("ESP") then
-                        v.Character.UpperTorso:FindFirstChild("ESP"):Destroy()
+            if AlreadyDestroying == false then
+                AlreadyDestroying = true
+                repeat
+                    local Target_ = FindPlrWithESP()
+                    if Target_ ~= nil then
+                        if game.Players:FindFirstChild(Target_).Character.UpperTorso:FindFirstChild("ESP") then
+                            game.Players:FindFirstChild(Target_).Character.UpperTorso:FindFirstChild("ESP"):Destroy()
+                        end
                     end
-                end
+                    wait(0.01)
+                until FindPlrWithESP() == nil
+                AlreadyDestroying = false
             end
         end
     end
